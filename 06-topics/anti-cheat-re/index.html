@@ -1,0 +1,5487 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A HackTricks-style field manual for reverse engineers who use AI in 2026. Practical setup, agent harnesses, MCP bridges, decompilation workflows, per-console recompilation, and verified techniques.">
+      
+      
+      
+        <link rel="canonical" href="https://initialrise.github.io/REWiki/06-topics/anti-cheat-re/">
+      
+      
+        <link rel="prev" href="../android-native-so/">
+      
+      
+        <link rel="next" href="../apple-ios-re/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>Anti-Cheat Reverse Engineering - AI-Assisted Reverse Engineering Wiki</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#anti-cheat-reverse-engineering" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AI-Assisted Reverse Engineering Wiki" class="md-header__button md-logo" aria-label="AI-Assisted Reverse Engineering Wiki" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 12c2.5 0 4.5 2 4.5 4.5 0 .88-.25 1.71-.69 2.4l3.08 3.1L21 23.39l-3.12-3.07c-.69.43-1.51.68-2.38.68-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5m0 2a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1v7l2.5-1.5L12 9V2h6a2 2 0 0 1 2 2v7.81A6.48 6.48 0 0 0 15.5 10 6.5 6.5 0 0 0 9 16.5c0 2.31 1.21 4.35 3.03 5.5z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-Assisted Reverse Engineering Wiki
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Anti-Cheat Reverse Engineering
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/initialrise/REWiki" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    initialrise/REWiki
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AI-Assisted Reverse Engineering Wiki" class="md-nav__button md-logo" aria-label="AI-Assisted Reverse Engineering Wiki" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 12c2.5 0 4.5 2 4.5 4.5 0 .88-.25 1.71-.69 2.4l3.08 3.1L21 23.39l-3.12-3.07c-.69.43-1.51.68-2.38.68-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5m0 2a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1v7l2.5-1.5L12 9V2h6a2 2 0 0 1 2 2v7.81A6.48 6.48 0 0 0 15.5 10 6.5 6.5 0 0 0 9 16.5c0 2.31 1.21 4.35 3.03 5.5z"/></svg>
+
+    </a>
+    AI-Assisted Reverse Engineering Wiki
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/initialrise/REWiki" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    initialrise/REWiki
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI-Assisted Reverse Engineering Wiki
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../00-fundamentals/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00 fundamentals
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    00 fundamentals
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00-fundamentals/assembly-crash-course/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    x86/x64 Assembly for the LLM Era
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00-fundamentals/binary-formats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PE, ELF, and Mach-O Anatomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00-fundamentals/reading-pseudocode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading Decompiler Pseudocode Critically
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../01-setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 setup
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-setup/agent-sandboxing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sandboxing the Agent Itself
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-setup/linux-sandbox-base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Base Linux RE Sandbox
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-setup/malware-isolation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Isolated Malware Analysis Environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-setup/network-isolation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network Isolation for RE Labs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../02-collab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 collab
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    02 collab
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/agent-orchestration-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Orchestration Tools and Frameworks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/claude-code-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code for RE: Full Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/codex-cursor-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codex CLI, Cursor, and Other Harnesses for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/context-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Engineering for Binary Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/context-files-and-memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Files and Persistent Memory for RE Projects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/llm-workflows-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Workflow Recipes for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/multi-agent-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Agent Collaboration Patterns for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/prompt-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt Patterns for RE Tasks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../03-decomp/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 decomp
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    03 decomp
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-decomp/batch-decompilation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Batch Decompilation at Scale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-decomp/decomp-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrating Decompilation with Agent Swarms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-decomp/decompile-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decompiling a Binary Piece by Piece: The Human+AI Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-decomp/triage-and-mapping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Triage and Function Mapping Before Decompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-decomp/verification-loop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Verification Loop: How to Trust AI Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../04-dynamic/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 dynamic
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    04 dynamic
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/emulation-unicorn-qiling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emulation: Unicorn, Qiling, and Beyond
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/frida-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frida Deep Dive: Stalker, Interceptor, Java Bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/fuzzing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fuzzing Binary Targets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/gdb-gef-pwndbg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gdb, gef, and pwndbg for Linux RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/unpacking-dumping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unpacking and Dumping at Runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/x64dbg-windbg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    x64dbg and WinDbg Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../04-recomp/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 recomp
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    04 recomp
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-recomp/gamecube-wii/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GameCube and Wii Decompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-recomp/handhelds-3ds-vita-psp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handheld Consoles: PSP, PS3/Vita, 3DS, Switch Lite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-recomp/matching-decomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matching Decompilation and Recompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-recomp/n64-decomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nintendo 64 Decompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-recomp/ps1-ps2-decomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PlayStation 1 and PS2 Decompilation and Recompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-recomp/ps3-ps4-ps5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PS3, PS4, PS5 Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-recomp/rom-hacking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROM Hacking and ROM Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-recomp/switch-decomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nintendo Switch Decompilation and Recompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-recomp/swmh-auto-recomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automated Recompilation (Static Recompilers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-recomp/xbox-recomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Xbox and Xbox 360 Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../05-tools/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 tools
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    05 tools
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05-tools/mcp-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP Server Catalog: Every Bridge That Matters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05-tools/skills-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Skills Catalog for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05-tools/tool-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RE Tool Catalog for the AI Era
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 topics
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    06 topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../android-native-so/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android Native (.so + JNI) RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anti-Cheat Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anti-Cheat Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#legal-warning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legal Warning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-landscape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Landscape
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Landscape">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commercial-products" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commercial products
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#open-source-and-custom-anti-cheats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open-source and custom anti-cheats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-anti-cheat-is-hostile-to-re" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Anti-Cheat Is Hostile to RE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-publicly-documented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Publicly Documented
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Is Publicly Documented">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#driver-to-usermode-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Driver-to-usermode communication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usermode-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usermode modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-bypass-categories-documented-not-endorsed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known bypass categories (documented, not endorsed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cat-and-mouse-timeline-public-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cat-and-mouse timeline (public record)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-for-authorized-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup for Authorized Study
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup for Authorized Study">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dedicated-research-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dedicated research machine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#offline-targets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Offline targets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vm-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VM isolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-not-to-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What not to do
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ai-assisted-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI-Assisted Workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AI-Assisted Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where-ai-helps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where AI helps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-ai-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where AI fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prompt-patterns-that-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prompt patterns that work
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step-analyzing-a-kernel-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step: Analyzing a Kernel Driver
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step: Analyzing a Kernel Driver">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-static-triage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Static triage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-load-in-ida-or-ghidra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Load in IDA or Ghidra
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-map-the-dispatch-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Map the dispatch table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-identify-kernel-callbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Identify kernel callbacks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-dynamic-analysis-in-a-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Dynamic analysis in a VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Document
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../apple-ios-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    iOS/macOS Reverse Engineering with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloud-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud and Remote Analysis Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ctf-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTF Challenges with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deobfuscation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deobfuscation: OLLVM, VMProtect, Themida, JS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dotnet-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    .NET Reverse Engineering Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../firmware-iot-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Firmware and IoT RE with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../game-engine-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Game Engine RE: Unity, Unreal, Custom
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../go-rust-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go and Rust Binary Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java-reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java and JVM Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux-elf-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux ELF and Shared Library RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../macos-system-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    macOS System Binary RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../malware-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Malware Analysis with AI Agents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../managed-code-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Managed and JIT Languages: .NET, Java, Go, Rust
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mobile-android-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android Reverse Engineering with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../packed-binaries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packed and Protected Binaries: The Unpacking Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../protocol-reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vb6-delphi-legacy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy Language RE: VB6, Delphi, PowerBasic, Fortran
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../web3-blockchain-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web3 and Blockchain RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows-internals-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Windows Internals for Reverse Engineers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows-kernel-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Windows Kernel Driver Reverse Engineering with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../07-advanced/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 advanced
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    07 advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-advanced/ai-security-threats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Security Threats When AI Reads Your Binary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-advanced/anti-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defeating Anti-Analysis: Anti-Debug, Anti-VM, Anti-Dump
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-advanced/firmware-recomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recompiling Consoles, Games, and Firmware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-advanced/model-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing Models for RE Tasks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../07-ai/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 ai
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    07 ai
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/agent-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How RE Agents Actually Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/agent-memory-systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Memory and Knowledge Persistence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/embeddings-rag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Embeddings and RAG Over Binary Content
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/evals-benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RE Benchmarks and Evals Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/fine-tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fine-Tuning Models for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/local-models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running RE Models Locally
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/ml-for-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML Models Built for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/red-teaming-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red-Teaming AI Agents in RE Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../07-analysis/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 analysis
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    07 analysis
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/binary-diffing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Binary Diffing and Function Matching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/format-re-file-formats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Format Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/game-hacking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Game Hacking and Cheat Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/hardware-jtag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware RE: UART, JTAG, SWD, Chip-off
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/kernel-exploitation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel Exploitation Concepts for Reverse Engineers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/malware-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Malware Configuration Extraction and Decryption
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/memory-forensics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Forensics and Dump Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/patching-cracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patching, Keygenning, and License-Check RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/symbolic-execution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Symbolic Execution and SMT Solving for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/vm-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analyzing Custom VMs and Bytecode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/vulnerability-research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vulnerability Research with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_13" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../08-case-studies/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 case studies
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_13" id="__nav_13_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    08 case studies
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../08-case-studies/more-end-to-end-case-studies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More End-to-End Case Studies: Packed .NET, Kernel Drivers, File Formats, Mobile Pinning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../08-case-studies/real-world-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    End-to-End Recipes: Real RE Scenarios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../09-ops/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 ops
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_14" id="__nav_14_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    09 ops
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09-ops/cost-tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cost Tracking and Budgeting for RE Agents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09-ops/daily-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Daily Workflows and Checklists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09-ops/legal-and-ethics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legal and Ethical Boundaries for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09-ops/notes-and-evidence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes, Evidence, and Project Hygiene
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../10-communities/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 communities
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    10 communities
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../10-communities/indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community Indexes and Directories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../10-communities/learning-paths/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths: From Zero to AI-Assisted RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../99-meta/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    99 meta
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    99 meta
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../99-meta/cheatsheet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RE + AI Cheatsheet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../99-meta/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary: RE + AI Terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#legal-warning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legal Warning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-landscape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Landscape
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Landscape">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commercial-products" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commercial products
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#open-source-and-custom-anti-cheats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open-source and custom anti-cheats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-anti-cheat-is-hostile-to-re" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Anti-Cheat Is Hostile to RE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-publicly-documented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Publicly Documented
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Is Publicly Documented">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#driver-to-usermode-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Driver-to-usermode communication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usermode-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usermode modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-bypass-categories-documented-not-endorsed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known bypass categories (documented, not endorsed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cat-and-mouse-timeline-public-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cat-and-mouse timeline (public record)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-for-authorized-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup for Authorized Study
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup for Authorized Study">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dedicated-research-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dedicated research machine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#offline-targets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Offline targets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vm-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VM isolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-not-to-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What not to do
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ai-assisted-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI-Assisted Workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AI-Assisted Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where-ai-helps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where AI helps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-ai-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where AI fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prompt-patterns-that-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prompt patterns that work
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step-analyzing-a-kernel-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step: Analyzing a Kernel Driver
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step: Analyzing a Kernel Driver">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-static-triage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Static triage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-load-in-ida-or-ghidra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Load in IDA or Ghidra
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-map-the-dispatch-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Map the dispatch table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-identify-kernel-callbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Identify kernel callbacks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-dynamic-analysis-in-a-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Dynamic analysis in a VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Document
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="anti-cheat-reverse-engineering">Anti-Cheat Reverse Engineering<a class="headerlink" href="#anti-cheat-reverse-engineering" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Tags: anti-cheat, kernel-drivers, EAC, BattlEye, Vanguard, FACEIT, game-security | Difficulty: Advanced | Prerequisites: Windows kernel fundamentals, driver reverse engineering, IDA Pro or Ghidra on PE files. See <code>../07-advanced/anti-analysis.md</code> and <code>deobfuscation.md</code> first.</p>
+</blockquote>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Anti-cheat reverse engineering is the study of the software that protects a game. Most commercial anti-cheats run as Windows kernel drivers. They scan memory, detect hooks, and verify that the game process is clean. Some also validate hardware. Server-side heuristics make the final call on bans.</p>
+<p>This page covers the major products, why they are hostile to analysis, what is public, and how to study them safely with AI assistance. It is a research-methodology page. It is not a bypass guide.</p>
+<h2 id="legal-warning">Legal Warning<a class="headerlink" href="#legal-warning" title="Permanent link">&para;</a></h2>
+<p>Read this before anything else.</p>
+<ul>
+<li>Reverse engineering for interoperability or security research has different legal standing per jurisdiction. In the United States, the DMCA has exemptions for security research, but they are narrow and contested. The 2024 exemption for video games covers "good faith security research" only when it does not violate other law. Circumventing anti-cheat may still violate the game's terms of service and can expose you to civil claims.</li>
+<li>Loading a third-party driver, patching kernel memory, or injecting code into a protected process on a machine that also holds your personal accounts is how people get banned, sued, or infected.</li>
+<li>Anti-cheat companies actively monitor public forums. Publishing exploit details or bypass source code is a fast way to get a cease-and-desist.</li>
+<li>The safe posture: study binaries you own on a machine dedicated to research, offline, with no game account logged in, and publish methodology rather than working exploits.</li>
+</ul>
+<p>If your goal is to understand the technology, the rest of this page is enough. If your goal is to cheat in a live game, stop here. Nothing below helps with that, and the legal and account risks are real.</p>
+<h2 id="the-landscape">The Landscape<a class="headerlink" href="#the-landscape" title="Permanent link">&para;</a></h2>
+<h3 id="commercial-products">Commercial products<a class="headerlink" href="#commercial-products" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Vendor</th>
+<th>Deployment</th>
+<th>Known structure (public knowledge)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Easy Anti-Cheat (EAC)</td>
+<td>Epic Games</td>
+<td>Kernel driver plus usermode service. Per-game install.</td>
+<td><code>EasyAntiCheat.sys</code> / <code>EasyAntiCheat_EOS.sys</code>. Driver loads at game start, stays for the session. Usermode module communicates over a device object.</td>
+</tr>
+<tr>
+<td>BattlEye (BE)</td>
+<td>BattlEye Innovations</td>
+<td>Kernel driver plus usermode service. Per-game.</td>
+<td><code>BEDaisy.sys</code> historically; current name varies by title. Strong reputation for kernel-level scanning and handle stripping.</td>
+</tr>
+<tr>
+<td>Riot Vanguard</td>
+<td>Riot Games</td>
+<td>Always-on kernel driver for VALORANT and League.</td>
+<td><code>vgk.sys</code> loads at boot. Boot-start driver means it is present before the game launches. TPM/Secure Boot checks reported on Windows 11 installs.</td>
+</tr>
+<tr>
+<td>FACEIT AC</td>
+<td>FACEIT</td>
+<td>Kernel driver for FACEIT-enabled CS2 and other titles.</td>
+<td>Per-platform. Strong focus on DMA and input-device integrity.</td>
+</tr>
+<tr>
+<td>XIGNCODE3, nProtect GameGuard, mhyprot</td>
+<td>XIGNCODE / INCA Internet / miHoYo</td>
+<td>Mostly kernel or hybrid. Common in Asian-market games.</td>
+<td>Varies widely. Many are older designs with known bypass research.</td>
+</tr>
+<tr>
+<td>VAC</td>
+<td>Valve</td>
+<td>Primarily usermode plus delayed server-side scanning.</td>
+<td><code>vac.dll</code> modules in the game process. VACnet bans come in waves. Historically the least kernel-invasive mainstream AC.</td>
+</tr>
+<tr>
+<td>EA Javelin, Activision Ricochet</td>
+<td>EA / Activision</td>
+<td>Kernel-level on modern titles.</td>
+<td>Ricochet has TPM 2.0 and Secure Boot requirements on some games.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="open-source-and-custom-anti-cheats">Open-source and custom anti-cheats<a class="headerlink" href="#open-source-and-custom-anti-cheats" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>URL</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>minecraft-anticheat (GrimAC)</td>
+<td><a href="https://github.com/GrimAnticheat/Grim">github.com/GrimAnticheat/Grim</a></td>
+<td>The standard open-source Minecraft anticheat. Java usermode. Predictive movement checks. ~1,800 stars.</td>
+</tr>
+<tr>
+<td>donnaskiez/ac</td>
+<td><a href="https://github.com/donnaskiez/ac">github.com/donnaskiez/ac</a></td>
+<td>A teaching kernel-mode anticheat skeleton in C. ~686 stars. Good for learning the driver shape without touching commercial code.</td>
+</tr>
+<tr>
+<td>NoMercy-ac/NoMercy</td>
+<td><a href="https://github.com/NoMercy-ac/NoMercy">github.com/NoMercy-ac/NoMercy</a></td>
+<td>Open-source anticheat with kernel and usermode parts. ~636 stars.</td>
+</tr>
+<tr>
+<td>UltimateAntiCheat</td>
+<td><a href="https://github.com/AlSch092/UltimateAntiCheat">github.com/AlSch092/UltimateAntiCheat</a></td>
+<td>Usermode-only C++ anticheat aimed at common cheat vectors. ~653 stars.</td>
+</tr>
+<tr>
+<td>niemand-sec/AntiCheat-Testing-Framework</td>
+<td><a href="https://github.com/niemand-sec/AntiCheat-Testing-Framework">github.com/niemand-sec/AntiCheat-Testing-Framework</a></td>
+<td>Framework for testing any anticheat against known attack vectors. ~823 stars. Stale since 2022.</td>
+</tr>
+<tr>
+<td>gmh5225/awesome-game-security</td>
+<td><a href="https://github.com/gmh5225/awesome-game-security">github.com/gmh5225/awesome-game-security</a></td>
+<td>The best single index of game-security research, anticheat internals writeups, and tools. ~3,700 stars, actively maintained. Start here.</td>
+</tr>
+</tbody>
+</table>
+<p>Custom game-side anti-cheat also exists: many studios write their own checks inside the game binary (handle checks, timing checks, server-authoritative validation). These live in the game EXE, not a separate driver, and are analyzed like ordinary protected binaries.</p>
+<h2 id="why-anti-cheat-is-hostile-to-re">Why Anti-Cheat Is Hostile to RE<a class="headerlink" href="#why-anti-cheat-is-hostile-to-re" title="Permanent link">&para;</a></h2>
+<p>Anti-cheat systems are designed to make the analyst's job harder. They assume the analyst is an attacker.</p>
+<ol>
+<li><strong>Kernel drivers.</strong> A driver runs at ring 0. It can read and write any process memory. It can register process, thread, and image-load notify routines. It can strip access rights from handles to the game process. Static analysis of a <code>.sys</code> file is normal PE reversing. Dynamic analysis requires a test-signing setup or a VM.</li>
+<li><strong>Boot-start and early load.</strong> Vanguard loads at boot. EAC and BattlEye load when the game starts, before the game process exists. Your debugger attaches after the driver is already watching.</li>
+<li><strong>Integrity checks.</strong> The driver periodically scans its own code, the game binary on disk and in memory, and critical system structures. Modified bytes trigger flags. Timing checks detect breakpoints and single-stepping.</li>
+<li><strong>Obfuscation.</strong> Commercial drivers are heavily obfuscated. Control-flow flattening, junk code, encrypted strings, and VM-protected routines are standard. VMProtect or custom protectors wrap the interesting logic.</li>
+<li><strong>Handle stripping.</strong> The driver removes <code>PROCESS_VM_READ</code>, <code>PROCESS_VM_WRITE</code>, and <code>PROCESS_CREATE_THREAD</code> rights from handles other processes try to open on the game. Cheat Engine, x64dbg, and Frida all need one of these rights.</li>
+<li><strong>Anti-debug and anti-VM.</strong> Debug registers are cleared. <code>KdDebuggerEnabled</code> and <code>NtQueryInformationProcess</code> checks run. Hypervisor detection blocks analysis VMs unless you hide them carefully.</li>
+<li><strong>Server-side validation.</strong> Even a perfect client-side bypass fails if the server validates movement, hit registration, or timing. Most modern cheats are detected server-side. The client is only half the system.</li>
+<li><strong>Signature and heuristic scanning.</strong> Known cheat tool signatures (Cheat Engine drivers, common DLL names, suspicious memory patterns) are flagged. Renaming a tool does not help if the behavior matches.</li>
+</ol>
+<h2 id="what-is-publicly-documented">What Is Publicly Documented<a class="headerlink" href="#what-is-publicly-documented" title="Permanent link">&para;</a></h2>
+<p>Public knowledge comes from three sources: vendor documentation, security research writeups, and open-source reimplementations.</p>
+<h3 id="driver-to-usermode-communication">Driver-to-usermode communication<a class="headerlink" href="#driver-to-usermode-communication" title="Permanent link">&para;</a></h3>
+<p>Every commercial anticheat splits work between a kernel driver and a usermode service. The typical flow:</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Kernel["Ring 0"]
+        KDRV["Anti-cheat driver .sys"]
+        KSCAN["Memory / handle / notify scans"]
+    end
+    subgraph User["Ring 3"]
+        USVC["Anticheat service / launcher"]
+        GAME["Game process"]
+        TOOL["Analysis tools"]
+    end
+    KDRV --&gt;|"IOCTL / shared memory"| USVC
+    KDRV --&gt;|"scan results"| USVC
+    USVC --&gt;|"policy + server reports"| GAME
+    KDRV -.-&gt;|"blocks or flags"| TOOL</code></pre>
+<p>The kernel driver exposes a device object (for example <code>\\.\EasyAntiCheat_EOS</code> historically, names vary by version and game). The usermode service opens it and sends IOCTLs or writes to shared memory. Research writeups on the <code>awesome-game-security</code> list document the IOCTL interfaces for several products. BattlEye's usermode-kernel boundary has been analyzed in public posts. The exact control codes change per version.</p>
+<h3 id="usermode-modules">Usermode modules<a class="headerlink" href="#usermode-modules" title="Permanent link">&para;</a></h3>
+<p>The usermode service is a normal PE. It handles:</p>
+<ul>
+<li>Game launch and heartbeat.</li>
+<li>Ban-wave coordination with the vendor backend.</li>
+<li>Signature updates.</li>
+<li>Some client-side checks that do not need ring 0.</li>
+</ul>
+<p>It is the easier target. It is also heavily protected by the same obfuscators.</p>
+<h3 id="known-bypass-categories-documented-not-endorsed">Known bypass categories (documented, not endorsed)<a class="headerlink" href="#known-bypass-categories-documented-not-endorsed" title="Permanent link">&para;</a></h3>
+<p>The public literature describes these attack classes. Knowing them helps you understand what the driver defends against:</p>
+<ul>
+<li><strong>Handle hijacking.</strong> Duplicate an existing legitimate handle to the game process instead of opening a new one. The driver must check handle origins.</li>
+<li><strong>Manual mapping.</strong> Inject a DLL without <code>LoadLibrary</code>. No module list entry, no <code>LdrLoadDll</code> call. Detected by VAD scans and thread-start checks.</li>
+<li><strong>Kernel callbacks abuse.</strong> Register <code>PsSetCreateProcessNotifyRoutine</code> or <code>ObRegisterCallbacks</code> to intercept the anticheat's own operations.</li>
+<li><strong>DMA attacks.</strong> A second PC with a PCIe FPGA card reads game memory over PCIe. No driver on the game PC. Detected by firmware checks and timing analysis on the host.</li>
+<li><strong>Hypervisor-based cheats.</strong> Run the game under a custom hypervisor that hides memory reads. Detected by hypervisor detection and timing checks.</li>
+<li><strong>Signed vulnerable drivers.</strong> Load a legitimately signed driver with a known vulnerability (BYOVD) to get ring 0. Microsoft maintains a vulnerable-driver blocklist. Anticheats check for it.</li>
+</ul>
+<p>Each of these has public proof-of-concept code somewhere. Most are patched within weeks. The cat-and-mouse is the point: the driver you analyze today is not the driver that ships next month.</p>
+<h3 id="cat-and-mouse-timeline-public-record">Cat-and-mouse timeline (public record)<a class="headerlink" href="#cat-and-mouse-timeline-public-record" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>2018–2019.</strong> BattlEye and EAC move to kernel mode. Public bypasses for usermode-only VAC-era tools stop working.</li>
+<li><strong>2020.</strong> Vanguard launches with VALORANT. Boot-start driver. TPM requirements follow on Windows 11.</li>
+<li><strong>2021–2022.</strong> DMA cheat hardware becomes cheap. Anticheats add firmware and device checks. FACEIT pushes back hard on DMA.</li>
+<li><strong>2023–2024.</strong> Server-side ML detection improves. Client bypasses that worked in 2020 now produce ban waves weeks later.</li>
+<li><strong>2025–2026.</strong> TPM 2.0 and Secure Boot become requirements on more titles. Hypervisor cheats get better; anticheat hypervisor detection gets better. The loop continues.</li>
+</ul>
+<p>This timeline is reconstructed from public reporting and is approximate. Exact dates and versions vary by source.</p>
+<h2 id="setup-for-authorized-study">Setup for Authorized Study<a class="headerlink" href="#setup-for-authorized-study" title="Permanent link">&para;</a></h2>
+<p>Authorized study means: binaries you are permitted to analyze, on infrastructure you control, without a live game account.</p>
+<h3 id="dedicated-research-machine">Dedicated research machine<a class="headerlink" href="#dedicated-research-machine" title="Permanent link">&para;</a></h3>
+<p>Use a separate Windows PC or VM that never logs into a game account. Install test-signing mode for driver work.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c"># Enable test signing (requires Secure Boot off in BIOS/UEFI)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">bcdedit</span> <span class="p">/</span><span class="nb">set </span><span class="n">testsigning</span> <span class="n">on</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">bcdedit</span> <span class="p">/</span><span class="nb">set </span><span class="n">nointegritychecks</span> <span class="n">on</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">shutdown</span> <span class="p">/</span><span class="nb">r </span><span class="p">/</span><span class="n">t</span> <span class="n">0</span>
+</code></pre></div>
+<p>After reboot, the desktop shows a "Test Mode" watermark. Load your own test driver with <code>sc create</code> or a tool like OSR Driver Loader. Never load a commercial anticheat driver on this machine.</p>
+<h3 id="offline-targets">Offline targets<a class="headerlink" href="#offline-targets" title="Permanent link">&para;</a></h3>
+<p>The safest binaries to study:</p>
+<ul>
+<li><strong>Older game versions</strong> whose anticheat was usermode-only or absent. Many DRM-free classics have no anticheat at all. The <code>awesome-decomp-games</code> project catalogs games with active decompilation scenes, which implies distributable binaries.</li>
+<li><strong>Open-source anticheats</strong> (GrimAC, donnaskiez/ac, NoMercy). You have full source. You can build, instrument, and break them freely.</li>
+<li><strong>Sample drivers</strong> from Microsoft's WDK samples and the <code>donnaskiez/ac</code> skeleton. These teach the driver structure without legal exposure.</li>
+<li><strong>Captures and dumps</strong> from research writeups. Many researchers publish IDA databases and Ghidra projects for older anticheat versions.</li>
+</ul>
+<h3 id="vm-isolation">VM isolation<a class="headerlink" href="#vm-isolation" title="Permanent link">&para;</a></h3>
+<p>A Windows VM with nested virtualization gives you snapshots and rollback. VMware Workstation and Hyper-V both support nested virt on modern hardware. Enable it in firmware and in the hypervisor settings.</p>
+<p>For kernel debugging, use a second VM as the debugger host with KDNET or a named pipe. WinDbg preview is the standard debugger. The <code>mnemonic-re/WinDbgX-MCP</code> server (mentioned in the report) exposes WinDbg to MCP clients for agent-assisted debugging.</p>
+<h3 id="what-not-to-do">What not to do<a class="headerlink" href="#what-not-to-do" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Do not load EAC, BattlEye, or Vanguard drivers on a machine with personal accounts or saved credentials.</li>
+<li>Do not attach a debugger to a live game process. The anticheat will detect it and may flag the account.</li>
+<li>Do not submit anticheat binaries or game executables to cloud LLM APIs or public sandboxes without legal review. You are sending protected code to a third party.</li>
+<li>Do not publish working bypasses, IOCTL abuse code, or DMA firmware. Publish analysis and methodology.</li>
+</ul>
+<h2 id="ai-assisted-workflow">AI-Assisted Workflow<a class="headerlink" href="#ai-assisted-workflow" title="Permanent link">&para;</a></h2>
+<p>AI helps in specific places. It does not replace the need for a safe lab.</p>
+<h3 id="where-ai-helps">Where AI helps<a class="headerlink" href="#where-ai-helps" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Static triage.</strong> Feed the driver PE to IDA or Ghidra, export the decompilation in chunks, and ask the model to identify IOCTL dispatch routines, callback registrations, and string-decryption loops. The model is good at pattern-matching known structures.</li>
+<li><strong>Naming and struct recovery.</strong> Kernel drivers use <code>DEVICE_OBJECT</code>, <code>IRP</code>, <code>IO_STACK_LOCATION</code>. The model can propose struct layouts from access patterns. Verify against MSDN and the WDK headers.</li>
+<li><strong>IOCTL interface mapping.</strong> Given a dispatch function, the model can enumerate the IOCTL codes and the buffers they touch. Cross-check against public writeups for the same product version.</li>
+<li><strong>Obfuscation triage.</strong> For VMProtect or custom-protected routines, the model can identify the VM entry, handler table, and bytecode format. It cannot devirtualize them. See <code>deobfuscation.md</code>.</li>
+<li><strong>Report drafting.</strong> The model summarizes findings into a structured report. You verify every claim against the binary.</li>
+</ol>
+<h3 id="where-ai-fails">Where AI fails<a class="headerlink" href="#where-ai-fails" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Live kernel state.</strong> The model cannot see what the driver is doing right now. It cannot read kernel memory, trace callbacks, or observe a scan in progress. That requires WinDbg, a kernel debugger, or manual instrumentation.</li>
+<li><strong>Hardware attestation.</strong> TPM checks, Secure Boot state, and CPU-level features are not visible to static analysis alone. The model cannot tell you whether a driver will refuse to load on a given machine.</li>
+<li><strong>Bypass generation.</strong> The model can write plausible-looking bypass code. It cannot test it against the live driver. It cannot know which patch the vendor shipped yesterday. Treat generated bypass code as pseudocode, not a tool.</li>
+<li><strong>Server-side logic.</strong> The server binary is not available. The model cannot analyze what it cannot see.</li>
+<li><strong>Anti-cheat evasion of the AI itself.</strong> Some anticheat-adjacent malware embeds prompt-injection strings in binaries (see <code>../07-advanced/ai-security-threats.md</code>). A driver full of obfuscated strings might contain text designed to manipulate an LLM analyst. Treat decompiled strings as hostile input.</li>
+</ul>
+<h3 id="recommended-loop">Recommended loop<a class="headerlink" href="#recommended-loop" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    A["Obtain binary legally"] --&gt; B["Static triage: PE headers, imports, strings"]
+    B --&gt; C["Decompile in IDA/Ghidra headless"]
+    C --&gt; D["Chunk pseudocode per function"]
+    D --&gt; E["AI proposes: IOCTL map, struct layouts, callback list"]
+    E --&gt; F["Human verifies against WDK docs and public writeups"]
+    F --&gt; G["Dynamic analysis in VM with kernel debugger"]
+    G --&gt; H["Document findings. No exploit code published."]</code></pre>
+<p>The AI step is E. Steps B, C, F, and G are deterministic or human-verified. Do not skip them.</p>
+<h3 id="prompt-patterns-that-work">Prompt patterns that work<a class="headerlink" href="#prompt-patterns-that-work" title="Permanent link">&para;</a></h3>
+<p>For IOCTL enumeration:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>This is a decompiled Windows kernel driver dispatch function.
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>List every IOCTL code it handles, the input buffer size it expects,
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>and what it does with the buffer. Cite the function address for each.
+</code></pre></div>
+<p>For callback identification:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Search this decompiled driver for calls to PsSetCreateProcessNotifyRoutine,
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>PsSetCreateThreadNotifyRoutine, PsSetLoadImageNotifyRoutine, and
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>ObRegisterCallbacks. For each hit, give the callback function address
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>and a one-line description of what the callback checks.
+</code></pre></div>
+<p>For string decryption:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>This function builds a string at runtime. Identify the encoding
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>(XOR, RC4, AES, custom). Write a Python decoder. Do not guess the key;
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>find where it is loaded from.
+</code></pre></div>
+<p>Always include: "Cite the function address." Always exclude: "Write a bypass." The model will do the first well. It will do the second dangerously.</p>
+<h2 id="step-by-step-analyzing-a-kernel-driver">Step-by-Step: Analyzing a Kernel Driver<a class="headerlink" href="#step-by-step-analyzing-a-kernel-driver" title="Permanent link">&para;</a></h2>
+<p>This is the generic workflow for any <code>.sys</code> file. It applies to commercial anticheats and open-source ones alike.</p>
+<h3 id="1-static-triage">1. Static triage<a class="headerlink" href="#1-static-triage" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># On Linux with pefile or DIE</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import pefile; pe=pefile.PE('driver.sys'); print(pe.OPTIONAL_HEADER.AddressOfEntryPoint)"</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>diec<span class="w"> </span>driver.sys<span class="w">    </span><span class="c1"># Detect It Easy: packer, compiler, .NET?</span>
+</code></pre></div>
+<p>Check for:</p>
+<ul>
+<li>Packer or protector signature (VMProtect, Themida, custom).</li>
+<li>Import table. Kernel drivers import from <code>ntoskrnl.exe</code>, <code>HAL.dll</code>, <code>wdmsec.sys</code>, etc. Missing imports mean dynamic resolution.</li>
+<li>Section names. <code>.text</code>, <code>.data</code>, <code>.pdata</code> are normal. Random names suggest packing.</li>
+<li>DriverEntry. This is the entry point. It calls <code>DriverEntry</code> which sets up dispatch routines.</li>
+</ul>
+<h3 id="2-load-in-ida-or-ghidra">2. Load in IDA or Ghidra<a class="headerlink" href="#2-load-in-ida-or-ghidra" title="Permanent link">&para;</a></h3>
+<p>Use headless mode for batch work:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Ghidra headless</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>analyzeHeadless<span class="w"> </span>/tmp/ghidra_proj<span class="w"> </span>AC_Project<span class="w"> </span>-import<span class="w"> </span>driver.sys<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span>-postScript<span class="w"> </span>ExportDecompilation.java<span class="w"> </span>-scriptPath<span class="w"> </span>/path/to/scripts
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c1"># IDA headless (idalib)</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>idalib<span class="w"> </span>-A<span class="w"> </span>-S<span class="s2">"script.py"</span><span class="w"> </span>driver.sys
+</code></pre></div>
+<p>For interactive work, load the <code>.sys</code> in IDA Pro 9.5 or Ghidra 12.2. Rename <code>DriverEntry</code> first. Then find <code>MajorFunction</code> dispatch table assignments in <code>DriverEntry</code>.</p>
+<h3 id="3-map-the-dispatch-table">3. Map the dispatch table<a class="headerlink" href="#3-map-the-dispatch-table" title="Permanent link">&para;</a></h3>
+<p><code>DriverEntry</code> calls <code>IoCreateDevice</code> and <code>IoCreateSymbolicLink</code>, then sets <code>MajorFunction[IRP_MJ_*]</code> handlers. The <code>IRP_MJ_DEVICE_CONTROL</code> handler is the IOCTL dispatcher. Decompile it.</p>
+<p>The dispatcher typically looks like:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">NTSTATUS</span><span class="w"> </span><span class="nf">DispatchDeviceControl</span><span class="p">(</span><span class="n">PDEVICE_OBJECT</span><span class="w"> </span><span class="n">DeviceObject</span><span class="p">,</span><span class="w"> </span><span class="n">PIRP</span><span class="w"> </span><span class="n">Irp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="n">PIO_STACK_LOCATION</span><span class="w"> </span><span class="n">irpSp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IoGetCurrentIrpStackLocation</span><span class="p">(</span><span class="n">Irp</span><span class="p">);</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="n">ULONG</span><span class="w"> </span><span class="n">ioctl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">irpSp</span><span class="o">-&gt;</span><span class="n">Parameters</span><span class="p">.</span><span class="n">DeviceIoControl</span><span class="p">.</span><span class="n">IoControlCode</span><span class="p">;</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="n">PVOID</span><span class="w"> </span><span class="n">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Irp</span><span class="o">-&gt;</span><span class="n">AssociatedIrp</span><span class="p">.</span><span class="n">SystemBuffer</span><span class="p">;</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="n">ULONG</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">irpSp</span><span class="o">-&gt;</span><span class="n">Parameters</span><span class="p">.</span><span class="n">DeviceIoControl</span><span class="p">.</span><span class="n">InputBufferLength</span><span class="p">;</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">ioctl</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">IOCTL_GET_STATUS</span><span class="p">:</span><span class="w"> </span><span class="p">...</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">IOCTL_SCAN_MEMORY</span><span class="p">:</span><span class="w"> </span><span class="p">...</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">IOCTL_REGISTER_CALLBACK</span><span class="p">:</span><span class="w"> </span><span class="p">...</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">        </span><span class="k">default</span><span class="o">:</span><span class="w"> </span><span class="p">...</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="p">}</span>
+</code></pre></div>
+<p>The IOCTL codes are the interface. Map them all. Each one is a research question: what does this let the usermode service ask the kernel to do?</p>
+<h3 id="4-identify-kernel-callbacks">4. Identify kernel callbacks<a class="headerlink" href="#4-identify-kernel-callbacks" title="Permanent link">&para;</a></h3>
+<p>Search for calls to:</p>
+<ul>
+<li><code>PsSetCreateProcessNotifyRoutine</code> / <code>Ex</code></li>
+<li><code>PsSetCreateThreadNotifyRoutine</code> / <code>Ex</code></li>
+<li><code>PsSetLoadImageNotifyRoutine</code></li>
+<li><code>ObRegisterCallbacks</code> (handle stripping)</li>
+<li><code>CmRegisterCallback</code> (registry)</li>
+<li><code>KeStackAttachProcess</code> (cross-process memory access)</li>
+</ul>
+<p>Each registered callback is a detection point. Decompile each callback function. Note what it checks: process name, image path, thread start address, handle access mask.</p>
+<h3 id="5-dynamic-analysis-in-a-vm">5. Dynamic analysis in a VM<a class="headerlink" href="#5-dynamic-analysis-in-a-vm" title="Permanent link">&para;</a></h3>
+<p>Load the driver in your test-signing VM. Use WinDbg over KDNET or a named pipe.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a># On the target VM (elevated cmd)
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>bcdedit /debug on
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>bcdedit /dbgsettings net hostip:&lt;debugger-ip&gt; port:50000
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a># On the debugger VM
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>windbg -k net:port=50000
+</code></pre></div>
+<p>Set breakpoints on <code>DriverEntry</code>, the dispatch routine, and each callback. Trigger the actions you want to observe (launch a test process, open a handle to it, load a DLL). Watch what the driver does.</p>
+<p>For commercial anticheats, do not do this on a machine with a game account. Do not do it at all unless you have written legal permission.</p>
+<h3 id="6-document">6. Document<a class="headerlink" href="#6-document" title="Permanent link">&para;</a></h3>
+<p>Write a report with:</p>
+<ul>
+<li>Driver version and hash.</li>
+<li>IOCTL map.</li>
+<li>Callback list with check descriptions.</li>
+<li>Memory regions scanned (if observable).</li>
+<li>Handle-stripping behavior.</li>
+<li>Communication protocol between driver and usermode service.</li>
+<li>Limitations and unknowns.</li>
+</ul>
+<p>No exploit code. No bypass patches. No "how to disable X" sections.</p>
+<h2 id="pitfalls">Pitfalls<a class="headerlink" href="#pitfalls" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Do not analyze a live anticheat driver on your daily driver.</strong> The driver can see your debugger, your tools, and your account tokens. Use a dedicated VM.</li>
+<li><strong>Do not trust decompiled strings.</strong> Anticheat binaries are full of decoy strings and encoded data. Verify every string by finding where it is used.</li>
+<li><strong>Do not assume the usermode service is the weak point.</strong> The kernel driver is the enforcement layer. The usermode service is the reporting layer. Both are protected.</li>
+<li><strong>Do not publish IOCTL abuse code.</strong> Documenting that an IOCTL exists is research. Publishing a tool that uses it to read game memory is a bypass.</li>
+<li><strong>Do not feed raw driver dumps to a cloud LLM.</strong> You are sending protected code to a third party. Check the terms of service and your legal exposure first.</li>
+<li><strong>Do not expect AI to devirtualize the driver.</strong> Commercial anticheats use VMProtect or custom protectors on key routines. AI can identify the VM. It cannot lift the bytecode.</li>
+<li><strong>Do not ignore server-side detection.</strong> A client-side analysis that ignores the server protocol is incomplete. The server decides bans. The client only collects evidence.</li>
+<li><strong>Do not use Cheat Engine or x64dbg on a protected game.</strong> The anticheat detects them by signature and by handle-access patterns. Use them only on your own test binaries.</li>
+<li><strong>Beware of fake anticheat research.</strong> Some GitHub repos claim to be anticheat bypasses but are malware. Check the author, the commit history, and the code before running anything.</li>
+<li><strong>Version drift is real.</strong> The driver you analyzed last month is not the driver shipping today. Pin your analysis to a specific version and hash.</li>
+</ul>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>../07-advanced/anti-analysis.md</code> — anti-debug, anti-VM, anti-dump techniques the driver uses against you</li>
+<li><code>deobfuscation.md</code> — VMProtect, Themida, and custom-protector deobfuscation</li>
+<li><code>../07-advanced/ai-security-threats.md</code> — prompt injection from hostile binaries</li>
+<li><code>../03-decomp/verification-loop.md</code> — verifying AI-generated claims about driver code</li>
+<li><code>../05-tools/tool-catalog.md</code> — IDA, Ghidra, WinDbg, and kernel-debugging tools</li>
+<li><code>../06-topics/malware-analysis.md</code> — the broader workflow for hostile binaries</li>
+<li><code>https://github.com/gmh5225/awesome-game-security</code> — the best public index of game-security research</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/initialrise/REWiki" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.indexes", "navigation.expand", "navigation.tracking", "search.highlight", "search.suggest", "content.code.copy", "content.tabs.link", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+        <script src="../../javascripts/vendor/mermaid.min.js"></script>
+      
+        <script src="../../javascripts/mermaid-init.js"></script>
+      
+    
+  </body>
+</html>

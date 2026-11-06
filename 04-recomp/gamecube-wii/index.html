@@ -1,0 +1,5652 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A HackTricks-style field manual for reverse engineers who use AI in 2026. Practical setup, agent harnesses, MCP bridges, decompilation workflows, per-console recompilation, and verified techniques.">
+      
+      
+      
+        <link rel="canonical" href="https://initialrise.github.io/REWiki/04-recomp/gamecube-wii/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../handhelds-3ds-vita-psp/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>GameCube and Wii Decompilation - AI-Assisted Reverse Engineering Wiki</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#gamecube-and-wii-decompilation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AI-Assisted Reverse Engineering Wiki" class="md-header__button md-logo" aria-label="AI-Assisted Reverse Engineering Wiki" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 12c2.5 0 4.5 2 4.5 4.5 0 .88-.25 1.71-.69 2.4l3.08 3.1L21 23.39l-3.12-3.07c-.69.43-1.51.68-2.38.68-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5m0 2a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1v7l2.5-1.5L12 9V2h6a2 2 0 0 1 2 2v7.81A6.48 6.48 0 0 0 15.5 10 6.5 6.5 0 0 0 9 16.5c0 2.31 1.21 4.35 3.03 5.5z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-Assisted Reverse Engineering Wiki
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              GameCube and Wii Decompilation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/initialrise/REWiki" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    initialrise/REWiki
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AI-Assisted Reverse Engineering Wiki" class="md-nav__button md-logo" aria-label="AI-Assisted Reverse Engineering Wiki" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 12c2.5 0 4.5 2 4.5 4.5 0 .88-.25 1.71-.69 2.4l3.08 3.1L21 23.39l-3.12-3.07c-.69.43-1.51.68-2.38.68-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5m0 2a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1v7l2.5-1.5L12 9V2h6a2 2 0 0 1 2 2v7.81A6.48 6.48 0 0 0 15.5 10 6.5 6.5 0 0 0 9 16.5c0 2.31 1.21 4.35 3.03 5.5z"/></svg>
+
+    </a>
+    AI-Assisted Reverse Engineering Wiki
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/initialrise/REWiki" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    initialrise/REWiki
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI-Assisted Reverse Engineering Wiki
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../00-fundamentals/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00 fundamentals
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    00 fundamentals
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00-fundamentals/assembly-crash-course/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    x86/x64 Assembly for the LLM Era
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00-fundamentals/binary-formats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PE, ELF, and Mach-O Anatomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00-fundamentals/reading-pseudocode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading Decompiler Pseudocode Critically
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../01-setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 setup
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-setup/agent-sandboxing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sandboxing the Agent Itself
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-setup/linux-sandbox-base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Base Linux RE Sandbox
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-setup/malware-isolation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Isolated Malware Analysis Environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-setup/network-isolation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network Isolation for RE Labs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../02-collab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 collab
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    02 collab
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/agent-orchestration-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Orchestration Tools and Frameworks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/claude-code-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code for RE: Full Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/codex-cursor-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codex CLI, Cursor, and Other Harnesses for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/context-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Engineering for Binary Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/context-files-and-memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Files and Persistent Memory for RE Projects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/llm-workflows-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Workflow Recipes for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/multi-agent-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Agent Collaboration Patterns for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-collab/prompt-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt Patterns for RE Tasks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../03-decomp/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 decomp
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    03 decomp
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-decomp/batch-decompilation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Batch Decompilation at Scale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-decomp/decomp-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrating Decompilation with Agent Swarms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-decomp/decompile-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decompiling a Binary Piece by Piece: The Human+AI Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-decomp/triage-and-mapping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Triage and Function Mapping Before Decompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-decomp/verification-loop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Verification Loop: How to Trust AI Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../04-dynamic/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 dynamic
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    04 dynamic
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/emulation-unicorn-qiling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emulation: Unicorn, Qiling, and Beyond
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/frida-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frida Deep Dive: Stalker, Interceptor, Java Bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/fuzzing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fuzzing Binary Targets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/gdb-gef-pwndbg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gdb, gef, and pwndbg for Linux RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/unpacking-dumping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unpacking and Dumping at Runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-dynamic/x64dbg-windbg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    x64dbg and WinDbg Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 recomp
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    04 recomp
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GameCube and Wii Decompilation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GameCube and Wii Decompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How It Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-cpu-gekko-and-broadway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The CPU: Gekko and Broadway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-toolchain-metrowerks-codewarrior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The toolchain: Metrowerks CodeWarrior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-dolphin-sdk-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Dolphin SDK library
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-decomp-lineage-decompme-to-doldecomp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The decomp lineage: decomp.me to doldecomp
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-m-and-the-melee-ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project M and the Melee ecosystem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wibo-and-wii-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        wibo and wii-use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dolphin-emulator-as-the-re-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dolphin emulator as the RE surface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-decomp-toolkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install decomp-toolkit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-a-decomp-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install a decomp project
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-dolphin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install Dolphin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-ghidra-with-gamecube-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install Ghidra with GameCube support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-m2c-for-ppc-assembly-to-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install m2c for PPC assembly to C
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#split-a-disc-into-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Split a disc into functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decompile-a-function-with-m2c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decompile a function with m2c
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#match-a-function-with-decomp-toolkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Match a function with decomp-toolkit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-dolphin-as-the-runtime-oracle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Dolphin as the runtime oracle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-dolphins-lua-api-for-runtime-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Dolphin's Lua API for runtime inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ai-assisted-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI-Assisted Techniques
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AI-Assisted Techniques">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ppc-assembly-to-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PPC assembly to C
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#symbol-recovery-from-dol-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Symbol recovery from DOL sections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ai-assisted-sdk-library-matching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI-assisted SDK library matching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ai-assisted-rel-module-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI-assisted REL module analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dolphin-runtime-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dolphin runtime verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pitfalls
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pitfalls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cpu-and-toolchain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CPU and toolchain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disc-and-file-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disc and file formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#save-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Save formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ai-specific-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI-specific pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#legal-and-community" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legal and community
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../handhelds-3ds-vita-psp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handheld Consoles: PSP, PS3/Vita, 3DS, Switch Lite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matching-decomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matching Decompilation and Recompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../n64-decomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nintendo 64 Decompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ps1-ps2-decomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PlayStation 1 and PS2 Decompilation and Recompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ps3-ps4-ps5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PS3, PS4, PS5 Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rom-hacking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROM Hacking and ROM Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../switch-decomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nintendo Switch Decompilation and Recompilation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../swmh-auto-recomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automated Recompilation (Static Recompilers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xbox-recomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Xbox and Xbox 360 Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../05-tools/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 tools
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    05 tools
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05-tools/mcp-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP Server Catalog: Every Bridge That Matters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05-tools/skills-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Skills Catalog for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05-tools/tool-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RE Tool Catalog for the AI Era
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../06-topics/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 topics
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    06 topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/android-native-so/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android Native (.so + JNI) RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/anti-cheat-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Anti-Cheat Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/apple-ios-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    iOS/macOS Reverse Engineering with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/cloud-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud and Remote Analysis Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/ctf-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTF Challenges with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/deobfuscation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deobfuscation: OLLVM, VMProtect, Themida, JS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/dotnet-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    .NET Reverse Engineering Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/firmware-iot-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Firmware and IoT RE with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/game-engine-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Game Engine RE: Unity, Unreal, Custom
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/go-rust-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go and Rust Binary Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/java-reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java and JVM Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/linux-elf-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux ELF and Shared Library RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/macos-system-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    macOS System Binary RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/malware-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Malware Analysis with AI Agents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/managed-code-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Managed and JIT Languages: .NET, Java, Go, Rust
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/mobile-android-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android Reverse Engineering with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/packed-binaries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packed and Protected Binaries: The Unpacking Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/protocol-reverse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/vb6-delphi-legacy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy Language RE: VB6, Delphi, PowerBasic, Fortran
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/web3-blockchain-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web3 and Blockchain RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/windows-internals-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Windows Internals for Reverse Engineers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-topics/windows-kernel-drivers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Windows Kernel Driver Reverse Engineering with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../07-advanced/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 advanced
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    07 advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-advanced/ai-security-threats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Security Threats When AI Reads Your Binary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-advanced/anti-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defeating Anti-Analysis: Anti-Debug, Anti-VM, Anti-Dump
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-advanced/firmware-recomp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recompiling Consoles, Games, and Firmware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-advanced/model-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing Models for RE Tasks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../07-ai/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 ai
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    07 ai
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/agent-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How RE Agents Actually Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/agent-memory-systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Memory and Knowledge Persistence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/embeddings-rag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Embeddings and RAG Over Binary Content
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/evals-benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RE Benchmarks and Evals Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/fine-tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fine-Tuning Models for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/local-models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running RE Models Locally
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/ml-for-re/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML Models Built for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-ai/red-teaming-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red-Teaming AI Agents in RE Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../07-analysis/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 analysis
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    07 analysis
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/binary-diffing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Binary Diffing and Function Matching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/format-re-file-formats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Format Reverse Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/game-hacking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Game Hacking and Cheat Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/hardware-jtag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware RE: UART, JTAG, SWD, Chip-off
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/kernel-exploitation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel Exploitation Concepts for Reverse Engineers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/malware-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Malware Configuration Extraction and Decryption
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/memory-forensics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Forensics and Dump Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/patching-cracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patching, Keygenning, and License-Check RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/symbolic-execution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Symbolic Execution and SMT Solving for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/vm-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analyzing Custom VMs and Bytecode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-analysis/vulnerability-research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vulnerability Research with AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_13" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../08-case-studies/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 case studies
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_13" id="__nav_13_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    08 case studies
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../08-case-studies/more-end-to-end-case-studies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More End-to-End Case Studies: Packed .NET, Kernel Drivers, File Formats, Mobile Pinning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../08-case-studies/real-world-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    End-to-End Recipes: Real RE Scenarios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../09-ops/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 ops
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_14" id="__nav_14_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    09 ops
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09-ops/cost-tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cost Tracking and Budgeting for RE Agents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09-ops/daily-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Daily Workflows and Checklists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09-ops/legal-and-ethics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legal and Ethical Boundaries for RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09-ops/notes-and-evidence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes, Evidence, and Project Hygiene
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../10-communities/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 communities
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    10 communities
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../10-communities/indexes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community Indexes and Directories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../10-communities/learning-paths/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths: From Zero to AI-Assisted RE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../99-meta/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    99 meta
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    99 meta
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../99-meta/cheatsheet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RE + AI Cheatsheet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../99-meta/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary: RE + AI Terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How It Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-cpu-gekko-and-broadway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The CPU: Gekko and Broadway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-toolchain-metrowerks-codewarrior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The toolchain: Metrowerks CodeWarrior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-dolphin-sdk-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Dolphin SDK library
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-decomp-lineage-decompme-to-doldecomp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The decomp lineage: decomp.me to doldecomp
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-m-and-the-melee-ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project M and the Melee ecosystem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wibo-and-wii-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        wibo and wii-use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dolphin-emulator-as-the-re-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dolphin emulator as the RE surface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-decomp-toolkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install decomp-toolkit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-a-decomp-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install a decomp project
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-dolphin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install Dolphin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-ghidra-with-gamecube-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install Ghidra with GameCube support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-m2c-for-ppc-assembly-to-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install m2c for PPC assembly to C
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#split-a-disc-into-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Split a disc into functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decompile-a-function-with-m2c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decompile a function with m2c
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#match-a-function-with-decomp-toolkit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Match a function with decomp-toolkit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-dolphin-as-the-runtime-oracle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Dolphin as the runtime oracle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-dolphins-lua-api-for-runtime-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Dolphin's Lua API for runtime inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ai-assisted-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI-Assisted Techniques
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AI-Assisted Techniques">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ppc-assembly-to-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PPC assembly to C
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#symbol-recovery-from-dol-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Symbol recovery from DOL sections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ai-assisted-sdk-library-matching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI-assisted SDK library matching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ai-assisted-rel-module-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI-assisted REL module analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dolphin-runtime-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dolphin runtime verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pitfalls
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pitfalls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cpu-and-toolchain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CPU and toolchain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disc-and-file-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disc and file formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#save-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Save formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ai-specific-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI-specific pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#legal-and-community" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legal and community
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="gamecube-and-wii-decompilation">GameCube and Wii Decompilation<a class="headerlink" href="#gamecube-and-wii-decompilation" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Tags: gamecube, wii, powerpc, gekko, broadway, decompilation, matching-decomp, dolphin, disc-images | Difficulty: Advanced | Prerequisites: <a href="../matching-decomp/">Matching decompilation</a>, <a href="../../03-decomp/decompile-workflow/">Decompiler workflow</a>, <a href="../../03-decomp/verification-loop/">Verification loops</a></p>
+</blockquote>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The GameCube and Wii run the same PowerPC CPU family with different clock speeds and feature sets. They share a disc format, a filesystem, a memory-card format, and a large common library base called the Dolphin SDK. That shared base makes the two platforms unusually productive for decompilation work.</p>
+<p>The CPU is the reason this page exists. It is not a modern PowerPC. It is a custom IBM chip called Gekko on GameCube and Broadway on Wii. The toolchain is Metrowerks CodeWarrior for GameCube/Wii, not GCC. Code is mostly C++ with templates, inline functions, and vendor-specific intrinsics for the CPU's unique features.</p>
+<p>In 2026 the GameCube/Wii decomp scene is healthy and active. The <code>doldecomp</code> GitHub organization hosts most of the matching-decomp projects. <code>doldecomp/melee</code> is the flagship: the Super Smash Bros. Melee decompilation is at high coverage and is one of the most complete PPC decomp projects ever. <code>doldecomp/sms</code> (Super Mario Sunshine) is also very active. The Wii side has <code>doldecomp/forecast</code> (the Forecast Channel) and <code>doldecomp/ogws</code> (Wii Sports, work in progress). The Wii U Virtual Console port of the same games is a different project space.</p>
+<p>AI fits this work the same way it fits every matching decomp: the model writes C, the compiler produces bytes, objdiff scores the diff. The GameCube/Wii-specific challenges are the PowerPC calling convention, CodeWarrior C++ codegen, and the large Dolphin SDK library that every game shares. Once the SDK library is matched, every new game gets much easier.</p>
+<p>This page covers:</p>
+<ul>
+<li>The Gekko and Broadway CPU, including what makes it different from a normal PowerPC.</li>
+<li>The decomp.me and doldecomp lineage for Melee and the broader GameCube/Wii scene.</li>
+<li>The <code>encounter/decomp-toolkit</code> toolchain for splitting discs, extracting DOL and REL files, and scoring matches.</li>
+<li>Disc images: GCM, ISO, RVZ, GCZ, WIA, WBFS, CISO, NFS, and TGC.</li>
+<li>Save formats: raw <code>.raw</code> memory-card files and the Dolphin emulator's <code>MemoryCardA</code> directory.</li>
+<li>The Dolphin emulator as a runtime oracle, including <code>dolphin-tool</code> for image conversion and the Lua scripting API.</li>
+<li>AI-assisted techniques for PPC assembly to C and for symbol recovery from DOL sections.</li>
+</ul>
+<h2 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
+<h3 id="the-cpu-gekko-and-broadway">The CPU: Gekko and Broadway<a class="headerlink" href="#the-cpu-gekko-and-broadway" title="Permanent link">&para;</a></h3>
+<p>GameCube uses the Gekko CPU. Wii uses Broadway. They are 32-bit big-endian PowerPC chips with several nonstandard features:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Gekko</th>
+<th>Broadway</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clock</td>
+<td>485 MHz</td>
+<td>729 MHz</td>
+<td>Single core</td>
+</tr>
+<tr>
+<td>Endianness</td>
+<td>Big-endian</td>
+<td>Big-endian</td>
+<td>All multi-byte data is BE</td>
+</tr>
+<tr>
+<td>Vector unit</td>
+<td>No AltiVec</td>
+<td>AltiVec</td>
+<td>Broadway adds AltiVec and more instructions</td>
+</tr>
+<tr>
+<td>L1 cache</td>
+<td>32 KB instruction + 32 KB data</td>
+<td>32 KB instruction + 32 KB data</td>
+<td>Write-through</td>
+</tr>
+<tr>
+<td>L2 cache</td>
+<td>256 KB shared</td>
+<td>256 KB shared</td>
+<td></td>
+</tr>
+<tr>
+<td>MMU</td>
+<td>Software-managed</td>
+<td>Software-managed</td>
+<td>No hardware page table for games</td>
+</tr>
+<tr>
+<td>FPU</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Single-precision only, no double-precision</td>
+</tr>
+<tr>
+<td>Timebase</td>
+<td>Yes</td>
+<td>Yes</td>
+<td><code>mftb</code>/<code>mftbu</code> for timers</td>
+</tr>
+</tbody>
+</table>
+<p>Gekko is close to a standard PowerPC 750 but with custom instructions for the GameCube's memory controller and graphics pipeline. Broadway adds AltiVec (128-bit vector registers) and more DSP-like instructions. Most game code does not use AltiVec directly; the SDK wraps it in intrinsics.</p>
+<p>The important consequence for decompilation: the CPU is not x86 and not ARM. Disassembly tools need PowerPC support. Ghidra has <code>PowerPC:BE:32:default</code> and a GameCube loader extension. Binary Ninja has PPC support. radare2 and rizin support PPC. The CodeWarrior assembler produces different codegen patterns than GCC, so flag matching is critical.</p>
+<h3 id="the-toolchain-metrowerks-codewarrior">The toolchain: Metrowerks CodeWarrior<a class="headerlink" href="#the-toolchain-metrowerks-codewarrior" title="Permanent link">&para;</a></h3>
+<p>The original games were built with Metrowerks CodeWarrior for GameCube/Wii. The compiler is <code>mwccppc.exe</code> (C++) or <code>mwcc.exe</code> (C). The versions used across titles range from 1.0 through 1.7, per decomp.wtf documentation.</p>
+<p>The community cannot distribute CodeWarrior legally. The <code>doldecomp/mweppc</code> project is a decompilation of the CodeWarrior toolchain itself, which means the community is slowly rebuilding the compiler from scratch. Until that completes, projects rely on a leaked or reconstructed CodeWarrior distribution, which each project documents separately.</p>
+<p>The CodeWarrior C++ compiler produces distinctive code patterns:</p>
+<ul>
+<li>Heavy inlining of template functions.</li>
+<li>Aggressive register allocation.</li>
+<li><code>bl</code> calls for short functions that GCC would inline.</li>
+<li>Specific prologue/epilogue sequences.</li>
+<li><code>mfspr</code>/<code>mtspr</code> for saving special-purpose registers.</li>
+</ul>
+<p>Matching C for CodeWarrior is harder than for GCC because the compiler's optimization decisions are less predictable. C++ templates add another layer. A matched function in Melee is not just C that compiles; it is C that produces the exact same instructions that CodeWarrior produced in 2001.</p>
+<h3 id="the-dolphin-sdk-library">The Dolphin SDK library<a class="headerlink" href="#the-dolphin-sdk-library" title="Permanent link">&para;</a></h3>
+<p>Every GameCube and Wii game links against the Dolphin SDK. The SDK provides:</p>
+<ul>
+<li><code>OS</code> functions: threads, messages, interrupts, memory.</li>
+<li><code>GX</code> functions: the graphics API (60+ entry points).</li>
+<li><code>DVD</code> functions: disc reading.</li>
+<li><code>AR</code>/<code>AX</code>/<code>AS</code> audio libraries.</li>
+<li><code>CARD</code> functions: memory card access.</li>
+<li><code>SI</code>/<code>PAD</code> functions: controller input.</li>
+<li><code>VI</code>/<code>AI</code> functions: video and audio interfaces.</li>
+<li><code>EXI</code>/<code>IPC</code> functions: external interfaces.</li>
+</ul>
+<p>The SDK is a static library linked into every game. Different games may use different SDK versions, but the core functions are stable. Once the SDK library is decompiled and matched, every new game's non-matched functions become mostly game-specific code.</p>
+<p><code>doldecomp/dolsdk2001</code> and <code>doldecomp/dolsdk2004</code> are decompilation projects for specific SDK versions. <code>doldecomp/forecast</code> uses the SDK to decompile the Wii's Forecast Channel.</p>
+<h3 id="the-decomp-lineage-decompme-to-doldecomp">The decomp lineage: decomp.me to doldecomp<a class="headerlink" href="#the-decomp-lineage-decompme-to-doldecomp" title="Permanent link">&para;</a></h3>
+<p>The GameCube/Wii decomp scene grew from the same roots as every other console decomp. This diagram shows the data flow from disc image to runnable decompiled game:</p>
+<pre class="mermaid"><code>flowchart TD
+    A["GameCube/Wii disc image"] --&gt; B["dtk disc extract / nod-rs"]
+    B --&gt; C["sys/main.dol + REL files"]
+    C --&gt; D["dtk rel merge -&gt; merged.elf"]
+    D --&gt; E["Decompiler: Ghidra/IDA/BN/m2c"]
+    E --&gt; F["AI writes matching C"]
+    F --&gt; G["CodeWarrior compiles"]
+    G --&gt; H["objdiff scores"]
+    H --&gt;|"score &lt; 100"| F
+    H --&gt;|"score = 100"| I["DOL/REL rebuild"]
+    I --&gt; J["Dolphin runtime oracle"]
+    J --&gt; K["doldecomp project"]</code></pre>
+<p>The loop between <code>F</code> and <code>H</code> is the human-plus-agent iteration. The compiler and objdiff are the oracle. The AI proposes C. The diff decides.</p>
+<ol>
+<li><strong>decomp.me</strong> (decomp.me, github.com/decompme/decomp.me) is the collaborative platform. It hosts GameCube and Wii targets including Melee. The platform compiles C server-side with the original compiler and flags, then diffs against the original object.</li>
+<li><strong>decomp-toolkit</strong> (github.com/encounter/decomp-toolkit) is the GameCube/Wii-specific framework. It provides <code>dtk</code> commands for splitting discs, extracting DOL and REL files, linking decompiled code, and scoring matches.</li>
+<li><strong>doldecomp</strong> (github.com/doldecomp) is the GitHub organization that hosts the projects. <code>melee</code> is the flagship. <code>sms</code> is Super Mario Sunshine. <code>brawl</code> is Super Smash Bros. Brawl. <code>forecast</code> is the Wii Forecast Channel.</li>
+</ol>
+<p>The workflow is the same as every matching decomp: split the ROM, pick a function, write C, compile, diff, iterate. The GameCube/Wii-specific parts are the disc format, the DOL/REL file structure, and the CodeWarrior toolchain.</p>
+<h3 id="project-m-and-the-melee-ecosystem">Project M and the Melee ecosystem<a class="headerlink" href="#project-m-and-the-melee-ecosystem" title="Permanent link">&para;</a></h3>
+<p>Project M is not a decomp project. It is a fan-made mod for Melee that runs on the decompilation. It provides custom stages, characters, and online play. It requires the <code>doldecomp/melee</code> source to build. The relationship is:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>GameCube/Wii disc -&gt; DOL/REL files -&gt; doldecomp/melee source -&gt; Project M mods -&gt; Dolphin
+</code></pre></div>
+<p>Project M's existence proves the Melee decomp is complete enough to build a working game. The decomp produces a binary that runs in Dolphin. Project M adds features on top.</p>
+<h3 id="wibo-and-wii-use">wibo and wii-use<a class="headerlink" href="#wibo-and-wii-use" title="Permanent link">&para;</a></h3>
+<p><code>wibo</code> is a minimal Win32 binary translator for Linux and macOS (github.com/decompals/wibo). It is not a GameCube emulator. It is used in decomp workflows to run Windows-only tools like CodeWarrior on Linux. <code>wii-use</code> is the Wii Remote library (github.com/wiiuse/wiiuse) used by homebrew, not a decomp tool. Neither is required for the decomp workflow itself.</p>
+<h3 id="dolphin-emulator-as-the-re-surface">Dolphin emulator as the RE surface<a class="headerlink" href="#dolphin-emulator-as-the-re-surface" title="Permanent link">&para;</a></h3>
+<p>Dolphin is the GameCube/Wii emulator. It is also the runtime oracle for decomp projects. The decomp produces a DOL file that should run identically to the original. Dolphin's job is to prove it does.</p>
+<p>Dolphin is a large C++ codebase with its own decompilation value. Its CPU emulator (JIT and interpreter) implements Gekko/Broadway. Its HLE (high-level emulation) layer implements the Dolphin SDK. Its LLE (low-level emulation) layer runs the actual game code on the emulated CPU.</p>
+<p>For decomp work, Dolphin provides:</p>
+<ul>
+<li>A reference implementation of the CPU and SDK.</li>
+<li><code>dolphin-tool</code> for disc image conversion (ISO to RVZ, etc.).</li>
+<li>A Lua scripting API for runtime inspection.</li>
+<li>A debugger pane for breakpoints and memory watches.</li>
+<li>Save-state support for deterministic testing.</li>
+</ul>
+<p>Dolphin is GPLv2+. It runs on Windows, Linux, macOS, and Android.</p>
+<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
+<h3 id="install-decomp-toolkit">Install decomp-toolkit<a class="headerlink" href="#install-decomp-toolkit" title="Permanent link">&para;</a></h3>
+<p><code>encounter/decomp-toolkit</code> is the GameCube/Wii decomp framework. It provides the <code>dtk</code> command.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/encounter/decomp-toolkit.git
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>decomp-toolkit
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>cargo<span class="w"> </span>build<span class="w"> </span>--release
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># dtk is in target/release/dtk</span>
+</code></pre></div>
+<p>Or install from source with <code>cargo install --path .</code> if you want it on your PATH.</p>
+<p><code>dtk</code> provides subcommands for the full workflow:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>dtk<span class="w"> </span>disc<span class="w"> </span>info<span class="w"> </span>game.iso<span class="w">          </span><span class="c1"># disc information</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>dtk<span class="w"> </span>disc<span class="w"> </span>extract<span class="w"> </span>game.iso<span class="w"> </span>out/<span class="w">  </span><span class="c1"># extract files</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>dtk<span class="w"> </span>disc<span class="w"> </span>convert<span class="w"> </span>game.wia<span class="w"> </span>game.iso<span class="w">  </span><span class="c1"># convert image format</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>dtk<span class="w"> </span>dol<span class="w"> </span>info<span class="w"> </span>main.dol<span class="w">           </span><span class="c1"># DOL file info</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>dtk<span class="w"> </span>rel<span class="w"> </span>info<span class="w"> </span>file.rel<span class="w">           </span><span class="c1"># REL file info</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>dtk<span class="w"> </span>rel<span class="w"> </span>merge<span class="w"> </span>main.dol<span class="w"> </span>rels/*.rel<span class="w"> </span>-o<span class="w"> </span>merged.elf<span class="w">  </span><span class="c1"># merge into ELF</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>dtk<span class="w"> </span>vfs<span class="w"> </span>ls<span class="w"> </span><span class="s1">'disc.rvz:files/'</span><span class="w">    </span><span class="c1"># list disc filesystem</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>dtk<span class="w"> </span>rarc<span class="w"> </span>list<span class="w"> </span>input.arc<span class="w">         </span><span class="c1"># list RARC archive</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>dtk<span class="w"> </span>nlzss<span class="w"> </span>decompress<span class="w"> </span>input.bin.lz<span class="w">  </span><span class="c1"># decompress NLZSS</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>dtk<span class="w"> </span>shasum<span class="w"> </span>-c<span class="w"> </span>game.sha1<span class="w">         </span><span class="c1"># verify checksums</span>
+</code></pre></div>
+<h3 id="install-a-decomp-project">Install a decomp project<a class="headerlink" href="#install-a-decomp-project" title="Permanent link">&para;</a></h3>
+<p>Pick a project from doldecomp or decomp.me. The Melee project is the best-documented:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/doldecomp/melee.git
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">cd</span><span class="w"> </span>melee
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># Follow the project's README for toolchain setup</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Requires: CodeWarrior (project-specific), decomp-toolkit, objdiff</span>
+</code></pre></div>
+<p>Each project has its own build system. <code>decomp-toolkit</code> projects use <code>ninja</code>. The Melee project has its own Makefile and configuration. Read the project's README before building.</p>
+<h3 id="install-dolphin">Install Dolphin<a class="headerlink" href="#install-dolphin" title="Permanent link">&para;</a></h3>
+<p>Dolphin is available for all major platforms. For decomp work, you need the latest development build or the stable release.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Windows: download from dolphin-emu.org</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># Linux: build from source or use a package</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>git<span class="w"> </span>clone<span class="w"> </span>--recurse-submodules<span class="w"> </span>https://github.com/dolphin-emu/dolphin.git
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">cd</span><span class="w"> </span>dolphin
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>cmake<span class="w"> </span>..<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>make<span class="w"> </span>-j<span class="k">$(</span>nproc<span class="k">)</span>
+</code></pre></div>
+<p>For decomp work, you also need <code>dolphin-tool</code> for image conversion. It is built as part of Dolphin.</p>
+<h3 id="install-ghidra-with-gamecube-support">Install Ghidra with GameCube support<a class="headerlink" href="#install-ghidra-with-gamecube-support" title="Permanent link">&para;</a></h3>
+<p>Ghidra does not ship with a GameCube/Wii loader by default. You need a community extension.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Cuyler36/Ghidra-GameCube-Loader</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Cuyler36/Ghidra-GameCube-Loader.git
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># Build the extension and install it in Ghidra's Extensions directory</span>
+</code></pre></div>
+<p>Or use <code>encounter/aurora</code>, a source-level GameCube/Wii compatibility layer that can analyze DOL files directly.</p>
+<h3 id="install-m2c-for-ppc-assembly-to-c">Install m2c for PPC assembly to C<a class="headerlink" href="#install-m2c-for-ppc-assembly-to-c" title="Permanent link">&para;</a></h3>
+<p><code>matt-kempster/m2c</code> is a decompiler for PowerPC assembly that produces C code. It supports CodeWarrior C++ demangling.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/matt-kempster/m2c.git
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">cd</span><span class="w"> </span>m2c
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>python3<span class="w"> </span>m2c.py<span class="w"> </span>--target<span class="w"> </span>ppc-mwcc-c++<span class="w"> </span>input.asm
+</code></pre></div>
+<p><code>m2c</code> is not a matching decompiler. It produces plausible C, not byte-matching C. It is useful for first drafts and for understanding what a function does.</p>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<h3 id="split-a-disc-into-functions">Split a disc into functions<a class="headerlink" href="#split-a-disc-into-functions" title="Permanent link">&para;</a></h3>
+<p>The first step is to split the disc image into DOL and REL files, then into individual functions.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Extract the disc</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>dtk<span class="w"> </span>disc<span class="w"> </span>extract<span class="w"> </span>game.iso<span class="w"> </span>extracted/
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># The main executable is in sys/main.dol</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>dtk<span class="w"> </span>dol<span class="w"> </span>info<span class="w"> </span>extracted/sys/main.dol
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="c1"># REL files are in files/*.rel or files/RELS.arc</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="c1"># Extract RELs from the archive if needed</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>dtk<span class="w"> </span>rarc<span class="w"> </span>extract<span class="w"> </span>extracted/files/RELS.arc<span class="w"> </span>rels/
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="c1"># Merge DOL and RELs into a single ELF for analysis</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>dtk<span class="w"> </span>rel<span class="w"> </span>merge<span class="w"> </span>extracted/sys/main.dol<span class="w"> </span>rels/*.rel<span class="w"> </span>-o<span class="w"> </span>merged.elf
+</code></pre></div>
+<p>The merged ELF is what you feed to Ghidra, IDA, or Binary Ninja. It contains all the code from the DOL and all REL modules in one file.</p>
+<h3 id="decompile-a-function-with-m2c">Decompile a function with m2c<a class="headerlink" href="#decompile-a-function-with-m2c" title="Permanent link">&para;</a></h3>
+<p>For a quick first draft, use <code>m2c</code> to convert PPC assembly to C:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Disassemble the function first (using Ghidra or r2)</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1"># Then feed the assembly to m2c</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>python3<span class="w"> </span>m2c.py<span class="w"> </span>--target<span class="w"> </span>ppc-mwcc-c++<span class="w"> </span><span class="k">function</span>.asm
+</code></pre></div>
+<p>The <code>--target ppc-mwcc-c++</code> flag tells m2c to use PowerPC assembly syntax and CodeWarrior C++ demangling. The output is C++ code that is plausible but not necessarily matching.</p>
+<h3 id="match-a-function-with-decomp-toolkit">Match a function with decomp-toolkit<a class="headerlink" href="#match-a-function-with-decomp-toolkit" title="Permanent link">&para;</a></h3>
+<p>The matching workflow uses <code>dtk</code> for scoring:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Build the project</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>dtk<span class="w"> </span>build
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Score a single function</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>dtk<span class="w"> </span><span class="nb">test</span><span class="w"> </span>src/function.cpp<span class="w"> </span>--json
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># Score the whole project</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>dtk<span class="w"> </span>verify<span class="w"> </span>--compare<span class="w"> </span>--json
+</code></pre></div>
+<p>The <code>--json</code> flag gives machine-readable output for agent consumption. The score is a percentage. 100 means byte-identical.</p>
+<h3 id="use-dolphin-as-the-runtime-oracle">Use Dolphin as the runtime oracle<a class="headerlink" href="#use-dolphin-as-the-runtime-oracle" title="Permanent link">&para;</a></h3>
+<p>After building a decompiled DOL, run it in Dolphin to verify it works:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Convert the built DOL to a disc image or run it directly</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>dolphin-tool<span class="w"> </span>convert<span class="w"> </span>built.iso<span class="w"> </span>output.rvz
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Run in Dolphin</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>Dolphin.exe<span class="w"> </span>output.rvz
+</code></pre></div>
+<p>For automated testing, Dolphin supports <code>--batch</code> mode and save states. You can script a comparison between the original and the decompiled version.</p>
+<h3 id="use-dolphins-lua-api-for-runtime-inspection">Use Dolphin's Lua API for runtime inspection<a class="headerlink" href="#use-dolphins-lua-api-for-runtime-inspection" title="Permanent link">&para;</a></h3>
+<p>Dolphin supports Lua scripting for runtime hooks. This is useful for verifying that a decompiled function behaves correctly.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1">-- In Dolphin's Lua console</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="kd">local</span><span class="w"> </span><span class="nv">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x80000000</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1">-- Read memory at an address</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="kd">local</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">memory</span><span class="p">.</span><span class="nf">read_u32</span><span class="p">(</span><span class="nv">base</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mh">0x1234</span><span class="p">)</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1">-- Write memory</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="nv">memory</span><span class="p">.</span><span class="nf">write_u32</span><span class="p">(</span><span class="nv">base</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mh">0x1234</span><span class="p">,</span><span class="w"> </span><span class="mh">0xdeadbeef</span><span class="p">)</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="c1">-- Hook a function</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="nv">memory</span><span class="p">.</span><span class="nf">hook_write</span><span class="p">(</span><span class="nv">base</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mh">0x1234</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">addr</span><span class="p">,</span><span class="w"> </span><span class="nv">size</span><span class="p">,</span><span class="w"> </span><span class="nv">value</span><span class="p">)</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s2">"Write to 0x%x: 0x%x"</span><span class="p">,</span><span class="w"> </span><span class="nv">addr</span><span class="p">,</span><span class="w"> </span><span class="nv">value</span><span class="p">))</span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="kr">end</span><span class="p">)</span>
+</code></pre></div>
+<p>The Lua API is not a replacement for a debugger, but it is faster for quick checks.</p>
+<h2 id="ai-assisted-techniques">AI-Assisted Techniques<a class="headerlink" href="#ai-assisted-techniques" title="Permanent link">&para;</a></h2>
+<h3 id="ppc-assembly-to-c">PPC assembly to C<a class="headerlink" href="#ppc-assembly-to-c" title="Permanent link">&para;</a></h3>
+<p>The main AI task is converting PowerPC assembly to C that compiles with CodeWarrior. The challenges are:</p>
+<ul>
+<li><strong>Calling convention</strong>: PPC uses <code>r3</code>-<code>r10</code> for arguments, <code>r3</code> for return value. The stack frame layout is specific.</li>
+<li><strong>Delay slots</strong>: PPC has branch delay slots. The instruction after a branch executes before the branch takes effect.</li>
+<li><strong>Condition register</strong>: <code>cr0</code>-<code>cr7</code> hold comparison results. Branches test these.</li>
+<li><strong>Special registers</strong>: <code>lr</code> (link register), <code>ctr</code> (count register), <code>xer</code> (fixed-point exception register).</li>
+<li><strong>AltiVec</strong>: Broadway has 32 vector registers <code>v0</code>-<code>v31</code>. Most code does not use them directly.</li>
+</ul>
+<p>Prompt template for PPC assembly to C:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>You are writing C that must compile to byte-identical PowerPC assembly.
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>Compiler: Metrowerks CodeWarrior for GameCube/Wii (mwccppc)
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>Version: 1.2 (or whichever the project uses)
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>Flags: -O4,p -enum int -Cpp_exceptions off -RTTI off -fp hard -str reuse -DSDK_IPC -sym on -i ./include -i ./include/REPLACEMENT -lang c++ -gccext,on -msgstyle gcc -Cpp_exceptions off
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>Target function: 0x80001234
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>Architecture: PowerPC Gekko/Broadway (32-bit big-endian)
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>Disassembly:
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>&lt;paste disassembly&gt;
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>Callers:
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>&lt;paste caller list&gt;
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>Data references:
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>&lt;paste globals, rodata, jump tables&gt;
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>Already-matched reference functions:
+<a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a>&lt;paste 1-3 matched functions for style&gt;
+<a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a>
+<a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a>Write the C. Do not write comments explaining the assembly. Write plausible source.
+<a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a>Compile it. Run objdiff. Read the diff.
+<a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a>Iterate until score 100 or until you have tried 25 builds.
+</code></pre></div>
+<p>The key is giving the agent the exact compiler version and flags. CodeWarrior's codegen is version-specific. A flag mismatch makes every function unmatchable.</p>
+<h3 id="symbol-recovery-from-dol-sections">Symbol recovery from DOL sections<a class="headerlink" href="#symbol-recovery-from-dol-sections" title="Permanent link">&para;</a></h3>
+<p>DOL files have a specific section structure:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>DOL header
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>.text   - code section
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>.data   - initialized data
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>.bss    - uninitialized data
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>.rodata - read-only data
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>.extab  - exception table
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>.extabindex - exception table index
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>.debug   - debug info (if present)
+</code></pre></div>
+<p>The DOL header contains offsets and sizes for each section. You can parse it to recover section boundaries.</p>
+<p>For symbol recovery:</p>
+<ol>
+<li>Parse the DOL header to get section offsets and sizes.</li>
+<li>Disassemble each section.</li>
+<li>Identify function boundaries from the disassembly (prologues, <code>bl</code> targets).</li>
+<li>Recover function names from:</li>
+<li>Debug info (if present, rare).</li>
+<li>String references (error messages, function names in logs).</li>
+<li>Cross-references from known SDK functions.</li>
+<li>Pattern matching against known library code.</li>
+<li>Recover data symbols from:</li>
+<li><code>.data</code> section references.</li>
+<li><code>.rodata</code> string tables.</li>
+<li>Global offset table (GOT) entries.</li>
+</ol>
+<p><code>encounter/cwdemangle</code> can demangle CodeWarrior C++ symbols. This is useful when the binary has mangled names.</p>
+<h3 id="ai-assisted-sdk-library-matching">AI-assisted SDK library matching<a class="headerlink" href="#ai-assisted-sdk-library-matching" title="Permanent link">&para;</a></h3>
+<p>The Dolphin SDK is shared across games. Once you match the SDK library for one game, you can reuse the matched functions for other games. The workflow:</p>
+<ol>
+<li>Pick a game with a large SDK library (Melee is good).</li>
+<li>Match the SDK functions first.</li>
+<li>Export the matched SDK as a library.</li>
+<li>For new games, link against the matched SDK library.</li>
+<li>Only match game-specific code.</li>
+</ol>
+<p>This is how the Melee project accelerated: the SDK functions were matched once, then reused.</p>
+<h3 id="ai-assisted-rel-module-analysis">AI-assisted REL module analysis<a class="headerlink" href="#ai-assisted-rel-module-analysis" title="Permanent link">&para;</a></h3>
+<p>REL files are relocatable modules. They contain code that is loaded at runtime. Each REL has its own relocation table. The AI can help by:</p>
+<ol>
+<li>Parsing the REL header to get section offsets.</li>
+<li>Identifying the relocation entries.</li>
+<li>Applying relocations to get absolute addresses.</li>
+<li>Decompiling the relocated code.</li>
+</ol>
+<p><code>dtk rel merge</code> does this automatically. It merges DOL and RELs into a single ELF.</p>
+<h3 id="dolphin-runtime-verification">Dolphin runtime verification<a class="headerlink" href="#dolphin-runtime-verification" title="Permanent link">&para;</a></h3>
+<p>The decompiled DOL is not done until it runs in Dolphin. The verification loop compares the decompiled binary against the original:</p>
+<pre class="mermaid"><code>flowchart LR
+    A["Original disc"] --&gt; B["Dolphin HLE/LLE"]
+    C["Decompiled DOL"] --&gt; D["dtk build + link"]
+    D --&gt; E["Rebuilt disc image"]
+    E --&gt; F["Dolphin HLE/LLE"]
+    B --&gt; G["Compare: framebuffer, memory card, save states"]
+    F --&gt; G
+    G --&gt; H{"Match?"}
+    H --&gt;|"No"| I["Find mismatch, fix C, rebuild"]
+    I --&gt; D
+    H --&gt;|"Yes"| J["Function verified"]</code></pre>
+<p>Dolphin's HLE (high-level emulation) implements the SDK directly. Its LLE (low-level emulation) runs the actual CPU code. For decomp verification, HLE is faster and more stable. LLE is more accurate for timing-sensitive code.</p>
+<h2 id="pitfalls">Pitfalls<a class="headerlink" href="#pitfalls" title="Permanent link">&para;</a></h2>
+<h3 id="cpu-and-toolchain">CPU and toolchain<a class="headerlink" href="#cpu-and-toolchain" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>PowerPC is not x86.</strong> Do not use x86 disassemblers. Use Ghidra with PPC support, IDA with PPC, or radare2.</li>
+<li><strong>CodeWarrior is not GCC.</strong> The codegen patterns are different. Flag matching is critical. A GCC-style flag set will not work.</li>
+<li><strong>Big-endian everywhere.</strong> All multi-byte data is big-endian. This affects string parsing, pointer dereferencing, and struct layouts.</li>
+<li><strong>AltiVec on Broadway.</strong> Wii games may use AltiVec instructions. Gekko does not have AltiVec. Do not assume AltiVec is available on GameCube.</li>
+<li><strong>Delay slots.</strong> PPC has branch delay slots. The instruction after a branch executes before the branch takes effect. This confuses decompilers.</li>
+</ul>
+<h3 id="disc-and-file-formats">Disc and file formats<a class="headerlink" href="#disc-and-file-formats" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>GCM is the raw format.</strong> ISO is a synonym. RVZ is a compressed format. GCZ is another compressed format. WIA is Wii's format. WBFS is a Wii backup format. CISO is a compressed ISO. NFS is Wii U VC. TGC is a special format.</li>
+<li><strong>DOL is not ELF.</strong> DOL is the GameCube/Wii executable format. It is not ELF. You need <code>dtk dol</code> or <code>dtk rel merge</code> to convert it.</li>
+<li><strong>REL files are relocatable.</strong> REL files contain code that is loaded at runtime. They need relocation before analysis.</li>
+<li><strong>RARC archives.</strong> Game files are often in RARC archives. Use <code>dtk rarc</code> or <code>dtk vfs</code> to extract them.</li>
+<li><strong>NLZSS compression.</strong> Many files are NLZSS-compressed. Use <code>dtk nlzss decompress</code>.</li>
+</ul>
+<h3 id="save-formats">Save formats<a class="headerlink" href="#save-formats" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Memory card files are <code>.raw</code>.</strong> The raw format is 8 MB per card (or 16 MB for some games). The header is at offset 0.</li>
+<li><strong>Dolphin's <code>MemoryCardA</code> directory.</strong> Dolphin stores memory cards as <code>.raw</code> files in <code>~/Library/Application Support/Dolphin Emulator/</code> on macOS, <code>%APPDATA%/Dolphin Emulator/</code> on Windows, or <code>~/.local/share/dolphin-emu/</code> on Linux.</li>
+<li><strong>Save file structure varies by game.</strong> There is no universal save format. Each game has its own structure. Use Dolphin's debugger to inspect memory card access.</li>
+<li><strong>Wii saves are different from GameCube saves.</strong> Wii saves use a different format with encryption. The <code>.raw</code> file contains the encrypted data.</li>
+</ul>
+<h3 id="ai-specific-pitfalls">AI-specific pitfalls<a class="headerlink" href="#ai-specific-pitfalls" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Do not feed raw PPC assembly to the LLM.</strong> Feed decompiler pseudocode or m2c output. The LLM cannot parse raw PPC assembly reliably.</li>
+<li><strong>Do not ask for "clean readable code".</strong> Ask for byte-matching C. The goal is compilation to identical bytes.</li>
+<li><strong>Cap the build budget.</strong> 25 builds per function is the Retrobench standard. Without a cap, agents thrash.</li>
+<li><strong>Feed the diff back each round.</strong> An agent that only sees its own C and not the objdiff output cannot converge.</li>
+<li><strong>Do not let the agent edit build scripts.</strong> Build scripts, linker scripts, and assembly files are off-limits.</li>
+<li><strong>Watch for fakematching.</strong> Hacks that game the verifier without producing real source. Check project rules.</li>
+</ul>
+<h3 id="legal-and-community">Legal and community<a class="headerlink" href="#legal-and-community" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Read the project's contribution rules.</strong> Some projects ban AI contributions. Check before submitting.</li>
+<li><strong>Do not publish ROMs or extracted assets.</strong> Decomp projects host only source and build files.</li>
+<li><strong>Do not use leaked source code.</strong> White-room only: the binary plus public projects.</li>
+<li><strong>Do not share CodeWarrior binaries.</strong> They are proprietary. Projects document their own toolchain setup.</li>
+</ul>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../matching-decomp/">Matching decompilation</a></li>
+<li><a href="../../03-decomp/decompile-workflow/">Decompiler workflow</a></li>
+<li><a href="../../03-decomp/verification-loop/">Verification loops</a></li>
+<li><a href="../../03-decomp/batch-decompilation/">Batch decompilation</a></li>
+<li><a href="../../02-collab/context-engineering/">Context engineering</a></li>
+<li><a href="../../05-tools/tool-catalog/">Tool catalog</a></li>
+<li><a href="../../06-topics/firmware-iot-re/">Firmware RE</a></li>
+<li><a href="../../06-topics/deobfuscation/">Deobfuscation</a></li>
+<li><a href="../../08-case-studies/real-world-recipes/">Real-world recipes</a></li>
+<li>https://github.com/doldecomp/melee — Melee decompilation</li>
+<li>https://github.com/doldecomp/sms — Super Mario Sunshine decompilation</li>
+<li>https://github.com/encounter/decomp-toolkit — GameCube/Wii decomp toolkit</li>
+<li>https://github.com/encounter/aurora — GameCube/Wii compatibility layer</li>
+<li>https://github.com/dolphin-emu/dolphin — Dolphin emulator</li>
+<li>https://github.com/matt-kempster/m2c — PPC assembly to C decompiler</li>
+<li>https://github.com/encounter/cwdemangle — CodeWarrior symbol demangler</li>
+<li>https://github.com/encounter/nod-rs — Disc image library</li>
+<li>https://github.com/Cuyler36/Ghidra-GameCube-Loader — Ghidra GameCube loader</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/initialrise/REWiki" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.indexes", "navigation.expand", "navigation.tracking", "search.highlight", "search.suggest", "content.code.copy", "content.tabs.link", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+        <script src="../../javascripts/vendor/mermaid.min.js"></script>
+      
+        <script src="../../javascripts/mermaid-init.js"></script>
+      
+    
+  </body>
+</html>

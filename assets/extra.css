@@ -1,0 +1,107 @@
+.mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 1.5em 0;
+  padding: 1em;
+  background: rgba(127, 127, 127, 0.06);
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid.zoomable {
+  cursor: zoom-in;
+  transition: box-shadow 0.15s ease;
+}
+
+.mermaid.zoomable:hover {
+  box-shadow: 0 0 0 2px rgba(103, 58, 183, 0.45);
+}
+
+/* ---- lightbox ---- */
+#mermaid-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+}
+
+#mermaid-lightbox.open {
+  display: block;
+}
+
+#mermaid-lightbox .mlb-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(2px);
+}
+
+#mermaid-lightbox .mlb-toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #eee;
+  z-index: 2;
+}
+
+#mermaid-lightbox .mlb-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #eee;
+  border-radius: 6px;
+  min-width: 34px;
+  height: 34px;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#mermaid-lightbox .mlb-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+#mermaid-lightbox .mlb-close {
+  margin-left: auto;
+  font-size: 22px;
+}
+
+#mermaid-lightbox .mlb-hint {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-left: 8px;
+}
+
+#mermaid-lightbox .mlb-stage {
+  position: absolute;
+  inset: 52px 0 0 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#mermaid-lightbox .mlb-canvas {
+  transform-origin: center center;
+  cursor: grab;
+  display: inline-block;
+}
+
+#mermaid-lightbox .mlb-canvas.panning {
+  cursor: grabbing;
+}
+
+#mermaid-lightbox .mlb-canvas svg {
+  display: block;
+  max-width: none !important;
+}
