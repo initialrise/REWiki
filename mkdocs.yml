@@ -1,0 +1,89 @@
+site_name: AI-Assisted Reverse Engineering Wiki
+site_description: A HackTricks-style field manual for reverse engineers who use AI in 2026. Practical setup, agent harnesses, MCP bridges, decompilation workflows, per-console recompilation, and verified techniques.
+site_url: https://initialrise.github.io/REWiki/
+repo_url: https://github.com/initialrise/REWiki
+repo_name: initialrise/REWiki
+docs_dir: docs
+site_dir: site
+use_directory_urls: true
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: deep purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: deep purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - navigation.expand
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.tabs.link
+    - toc.follow
+  icon:
+    logo: material/book-search
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+plugins:
+  - search
+
+extra_css:
+  - assets/extra.css
+
+extra_javascript:
+  - javascripts/vendor/mermaid.min.js
+  - javascripts/mermaid-init.js
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/initialrise/REWiki
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde

@@ -1,0 +1,26 @@
+# Topics
+
+> By target type: Android, iOS, firmware, malware, .NET, protocols, cloud, legacy languages, CTF.
+
+- [Android Native (.so + JNI) RE](android-native-so.md)
+- [Anti-Cheat Reverse Engineering](anti-cheat-re.md)
+- [iOS/macOS Reverse Engineering with AI](apple-ios-re.md)
+- [Cloud and Remote Analysis Platforms](cloud-analysis.md)
+- [CTF Challenges with AI](ctf-ai.md)
+- [Deobfuscation: OLLVM, VMProtect, Themida, JS](deobfuscation.md)
+- [.NET Reverse Engineering Deep Dive](dotnet-deep-dive.md)
+- [Firmware and IoT RE with AI](firmware-iot-re.md)
+- [Game Engine RE: Unity, Unreal, Custom](game-engine-re.md)
+- [Go and Rust Binary Reverse Engineering](go-rust-re.md)
+- [Java and JVM Reverse Engineering](java-reverse.md)
+- [Linux ELF and Shared Library RE](linux-elf-re.md)
+- [macOS System Binary RE](macos-system-re.md)
+- [Malware Analysis with AI Agents](malware-analysis.md)
+- [Managed and JIT Languages: .NET, Java, Go, Rust](managed-code-re.md)
+- [Android Reverse Engineering with AI](mobile-android-re.md)
+- [Packed and Protected Binaries: The Unpacking Workflow](packed-binaries.md)
+- [Protocol Reverse Engineering](protocol-reverse.md)
+- [Legacy Language RE: VB6, Delphi, PowerBasic, Fortran](vb6-delphi-legacy.md)
+- [Web3 and Blockchain RE](web3-blockchain-re.md)
+- [Windows Internals for Reverse Engineers](windows-internals-re.md)
+- [Windows Kernel Driver Reverse Engineering with AI](windows-kernel-drivers.md)
